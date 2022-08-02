@@ -1,0 +1,156 @@
+<html>
+  <head>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/vis-network@latest/styles/vis-network.css"
+      type="text/css"
+    />
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm/vis-network@latest/dist/vis-network.min.js"
+    ></script>
+    <center>
+      <h1></h1>
+    </center>
+
+    <!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+
+    <style type="text/css">
+      #mynetwork {
+        width: 1000px;
+        height: 1000px;
+        background-color: #ffffff;
+        border: 1px solid lightgray;
+        position: relative;
+        float: left;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="mynetwork"></div>
+
+    <script type="text/javascript">
+      // initialize global variables.
+      var edges;
+      var nodes;
+      var network;
+      var container;
+      var options, data;
+
+      // This method is responsible for drawing the graph, returns the drawn network
+      function drawGraph() {
+        var container = document.getElementById("mynetwork");
+
+        // parsing and collecting nodes and edges from the python
+        nodes = new vis.DataSet([
+          { id: "DEN170073", label: "DEN170073", shape: "dot", size: 10 },
+          { id: "K180647", label: "K180647", shape: "dot", size: 10 },
+          { id: "K193658", label: "K193658", shape: "dot", size: 10 },
+          { id: "K182177", label: "K182177", shape: "dot", size: 10 },
+          { id: "K212261", label: "K212261", shape: "dot", size: 10 },
+          { id: "K182875", label: "K182875", shape: "dot", size: 10 },
+          { id: "K200873", label: "K200873", shape: "dot", size: 10 },
+          { id: "QAS", label: "QAS", shape: "dot", size: 10 },
+          { id: "K192383", label: "K192383", shape: "dot", size: 10 },
+          { id: "K200855", label: "K200855", shape: "dot", size: 10 },
+          { id: "K190896", label: "K190896", shape: "dot", size: 10 },
+          { id: "K190072", label: "K190072", shape: "dot", size: 10 },
+          { id: "K193087", label: "K193087", shape: "dot", size: 10 },
+          { id: "K193298", label: "K193298", shape: "dot", size: 10 },
+          { id: "K193351", label: "K193351", shape: "dot", size: 10 },
+          { id: "K200921", label: "K200921", shape: "dot", size: 10 },
+          { id: "K211179", label: "K211179", shape: "dot", size: 10 },
+          { id: "K210209", label: "K210209", shape: "dot", size: 10 },
+          { id: "K203260", label: "K203260", shape: "dot", size: 10 },
+          { id: "K192167", label: "K192167", shape: "dot", size: 10 },
+          { id: "K190424", label: "K190424", shape: "dot", size: 10 },
+          { id: "K201310", label: "K201310", shape: "dot", size: 10 },
+          { id: "K203508", label: "K203508", shape: "dot", size: 10 },
+          { id: "K220499", label: "K220499", shape: "dot", size: 10 },
+          { id: "K201020", label: "K201020", shape: "dot", size: 10 },
+          { id: "K210237", label: "K210237", shape: "dot", size: 10 },
+          { id: "K200941", label: "K200941", shape: "dot", size: 10 },
+          { id: "K221314", label: "K221314", shape: "dot", size: 10 },
+          { id: "K221240", label: "K221240", shape: "dot", size: 10 },
+          { id: "K213886", label: "K213886", shape: "dot", size: 10 },
+          { id: "K213721", label: "K213721", shape: "dot", size: 10 },
+          { id: "K221248", label: "K221248", shape: "dot", size: 10 },
+        ]);
+        edges = new vis.DataSet([
+          { from: "DEN170073", label: 1, to: "K180647", weight: 1 },
+          { from: "DEN170073", label: 1, to: "K193658", weight: 1 },
+          { from: "DEN170073", label: 1, to: "K182177", weight: 1 },
+          { from: "DEN170073", label: 1, to: "K212261", weight: 1 },
+          { from: "DEN170073", label: 1, to: "K182875", weight: 1 },
+          { from: "DEN170073", label: 1, to: "K200873", weight: 1 },
+          { from: "DEN170073", label: 1, to: "QAS", weight: 1 },
+          { from: "K180647", label: 1, to: "K192383", weight: 1 },
+          { from: "K180647", label: 1, to: "K200855", weight: 1 },
+          { from: "K180647", label: 1, to: "K190896", weight: 1 },
+          { from: "K180647", label: 1, to: "K190072", weight: 1 },
+          { from: "K180647", label: 1, to: "K193087", weight: 1 },
+          { from: "K180647", label: 1, to: "K193298", weight: 1 },
+          { from: "K180647", label: 1, to: "K193351", weight: 1 },
+          { from: "K180647", label: 1, to: "K200921", weight: 1 },
+          { from: "K180647", label: 1, to: "K211179", weight: 1 },
+          { from: "K193658", label: 1, to: "K210209", weight: 1 },
+          { from: "K182177", label: 1, to: "K203260", weight: 1 },
+          { from: "K182177", label: 1, to: "K192167", weight: 1 },
+          { from: "K182177", label: 1, to: "K190424", weight: 1 },
+          { from: "K182177", label: 1, to: "K201310", weight: 1 },
+          { from: "K190072", label: 1, to: "K203508", weight: 1 },
+          { from: "K190072", label: 1, to: "K220499", weight: 1 },
+          { from: "K190072", label: 1, to: "K201020", weight: 1 },
+          { from: "K190072", label: 1, to: "K210237", weight: 1 },
+          { from: "K193087", label: 1, to: "K200941", weight: 1 },
+          { from: "K203508", label: 1, to: "K221314", weight: 1 },
+          { from: "K203508", label: 1, to: "K221240", weight: 1 },
+          { from: "K203508", label: 1, to: "K213886", weight: 1 },
+          { from: "K203508", label: 1, to: "K213721", weight: 1 },
+          { from: "K200941", label: 1, to: "K221248", weight: 1 },
+        ]);
+
+        // adding nodes and edges to the graph
+        data = { nodes: nodes, edges: edges };
+
+        var options = {
+          configure: {
+            enabled: false,
+          },
+          edges: {
+            color: {
+              inherit: true,
+            },
+            smooth: {
+              enabled: true,
+              type: "dynamic",
+            },
+          },
+          interaction: {
+            dragNodes: true,
+            hideEdgesOnDrag: false,
+            hideNodesOnDrag: false,
+          },
+          physics: {
+            enabled: true,
+            stabilization: {
+              enabled: true,
+              fit: true,
+              iterations: 1000,
+              onlyDynamicEdges: false,
+              updateInterval: 50,
+            },
+          },
+        };
+
+        network = new vis.Network(container, data, options);
+
+        return network;
+      }
+
+      drawGraph();
+    </script>
+  </body>
+</html>
