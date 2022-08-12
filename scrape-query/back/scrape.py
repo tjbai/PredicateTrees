@@ -113,13 +113,10 @@ def form_tree(pcode, verbose=False):
     return adj_list
 
 
-# TODO: add color
 def get_node_val(adj_list, pcode):
-    DEFAULT = 25
-    SIZE_DICT = {0: 400, 1: 200, 2: 50}
 
     nodes = []
-    values = []
+    values = {}
 
     stk = []
     stk.append((pcode, 0))
@@ -130,8 +127,7 @@ def get_node_val(adj_list, pcode):
             continue
 
         nodes.append(node)
-        values.append(SIZE_DICT[level]
-                      ) if level <= 2 else values.append(DEFAULT)
+        values[node] = level
 
         for child in adj_list[node]:
             stk.append((child, level+1))
@@ -139,7 +135,7 @@ def get_node_val(adj_list, pcode):
     return nodes, values
 
 
-def to_json(pcode, adj_list, nodes):
+def to_json(pcode, adj_list, nodes, values):
     res = {}
     res['tree'] = adj_list
     res['info'] = {}
@@ -155,13 +151,19 @@ def to_json(pcode, adj_list, nodes):
             res['info'][doc['k_number']] = {
                 'DECISION_DATE': doc['decision_date'],
                 'PRODUCT_CODES': doc['product_code'],
-                'DEVICE_TRADE_NAME': doc['device_name']
+                'DEVICE_TRADE_NAME': doc['device_name'],
+                'GENERATION': values[doc['k_number']]
             }
+
+    for n in nodes:
+        if n not in res['info']:
+            res['info'][n] = {}
+            res['info'][n]['GENERATION'] = values[n]
 
     return json.dumps(res)
 
 
-def scrape(pcode, verbose = False):
-    adj_list = form_tree(pcode, verbose = verbose)
-    nodes, _ = get_node_val(adj_list, pcode)
-    return to_json(pcode, adj_list, nodes)
+def scrape(pcode, verbose=False):
+    adj_list = form_tree(pcode, verbose=verbose)
+    nodes, values = get_node_val(adj_list, pcode)
+    return to_json(pcode, adj_list, nodes, values)
