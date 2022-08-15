@@ -21,10 +21,6 @@ const LinkButton = ({ name, selectedNode }) => {
     }
   }, [selectedNode]);
 
-  useEffect(() => {
-    console.log(url);
-  }, [url]);
-
   return (
     <Button flex={1} borderRadius="0px">
       <Link href={url} isExternal>

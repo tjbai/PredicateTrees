@@ -5,27 +5,34 @@ import * as d3 from "d3";
 import "./App.css";
 
 import { QAS, MYN, LZA } from "./ExampleTrees"; // Preprocessed trees
-import { K203191, K221248 } from "./ExampleBranches"; // Preprocessed branches
+import { K190072 } from "./ExampleBranches"; // Preprocessed branches
 import Tooltip from "./Tooltip";
 import Links from "./Links";
+import ToggleStates from "./ToggleStates";
 
 function App() {
-  const [input, setInput] = useState("");
-  const [tree, setTree] = useState({ nodes: [], links: [] });
-  const [treeJSON, setTreeJSON] = useState({});
-  const [selectedNode, setSelectedNode] = useState("");
+  const [input, setInput] = useState(""); // User input
+  const [tree, setTree] = useState({ nodes: [], links: [] }); // JSON formatted for force-graph component
+  const [treeJSON, setTreeJSON] = useState({}); // JSON pulled from backend
+  const [selectedNode, setSelectedNode] = useState(""); // Node clicked on by user
+  const [highlightedNode, setHighlightedNode] = useState(""); // Node queried by user
 
-  const fgRef = useRef();
+  const fgRef = useRef(); // force-graph reference
 
-  // Toggle-able states
-  const [particles, setParticles] = useState(true);
-  const [labels, setLabels] = useState(true);
-  const [treeFormat, setTreeFormat] = useState(false);
-  const [sizeByGeneration, setSizeByGeneration] = useState(true);
+  // User options
+  const [options, setOptions] = useState({
+    particles: true,
+    labels: true,
+    formatAsTree: true,
+    sizeByGeneration: true,
+    colorByGeneration: true,
+  });
 
-  // TODO: Adapt getTree and getBranch to whatever database/api
+  // TODO: Change to not be hardcoded
   const getTree = () => {
     setSelectedNode("");
+
+    // TODO: format checking for input
 
     if (input === "QAS") {
       setTreeJSON(QAS);
@@ -39,15 +46,16 @@ function App() {
     }
   };
 
+  // TODO: Change to not be hardcoded
   const getBranch = () => {
     setSelectedNode("");
 
-    if (input === "K203191") {
-      setTreeJSON(K203191);
-      reformatTree(K203191);
-    } else if (input === "K221248") {
-      setTreeJSON(K221248);
-      reformatTree(K221248);
+    // TODO: format checking for input
+
+    if (input === "K190072") {
+      setHighlightedNode(input);
+      setTreeJSON(K190072);
+      reformatTree(K190072);
     }
   };
 
@@ -78,7 +86,7 @@ function App() {
 
   // Computes node size based off generation
   const sizeByGen = (name) => {
-    const VAL_DICT = [10, 3, 2];
+    const VAL_DICT = [10, 2, 1];
     const DEFAULT = 0.5;
     let gen = treeJSON.info[name]["GENERATION"];
     return gen <= 2 ? VAL_DICT[gen] : DEFAULT;
@@ -86,10 +94,29 @@ function App() {
 
   // Node colors by generation
   const colorByGen = (name) => {
+    const HIGHLIGHT_COLOR = "#f1f50a";
     const COLOR_DICT = ["#f56942", "#f5a442", "#f5d442", "#f5f542"];
     const DEFAULT = "#f6fc9a";
+    const ODD_COLOR = "#008000";
+    const EVEN_COLOR = "#FF0000";
+
     let gen = treeJSON.info[name]["GENERATION"];
-    return gen <= 3 ? COLOR_DICT[gen] : DEFAULT;
+
+    // Coloring gradient based off generation
+    if (options.colorByGeneration) {
+      return name === highlightedNode
+        ? HIGHLIGHT_COLOR
+        : gen <= 3
+        ? COLOR_DICT[gen]
+        : DEFAULT;
+    }
+
+    // Alternative coloring that just alternates color
+    return name === highlightedNode
+      ? HIGHLIGHT_COLOR
+      : gen % 2
+      ? ODD_COLOR
+      : EVEN_COLOR;
   };
 
   // Compute node size based off number of children
@@ -116,36 +143,15 @@ function App() {
         </Stack>
 
         {/* User options */}
-        <Stack spacing={5} direction="row">
-          <Checkbox
-            isChecked={particles}
-            onChange={(e) => setParticles(e.target.checked)}
-          >
-            Enable Particles
-          </Checkbox>
-          <Checkbox
-            isChecked={labels}
-            onChange={(e) => setLabels(e.target.checked)}
-          >
-            View Labels
-          </Checkbox>
-          <Checkbox
-            isChecked={treeFormat}
-            onChange={(e) => setTreeFormat(e.target.checked)}
-          >
-            Format as Tree
-          </Checkbox>
-          <Checkbox
-            isChecked={sizeByGeneration}
-            onChange={(e) => setSizeByGeneration(e.target.checked)}
-          >
-            {sizeByGeneration ? "Size by Generation" : "Size by Children"}
-          </Checkbox>
-        </Stack>
+        <ToggleStates options={options} setOptions={setOptions} />
 
         {/* Tooltip and Links */}
         {selectedNode && (
-          <Tooltip treeJSON={treeJSON} selectedNode={selectedNode} />
+          <Tooltip
+            treeJSON={treeJSON}
+            selectedNode={selectedNode}
+            setSelectedNode={setSelectedNode}
+          />
         )}
         {selectedNode && <Links selectedNode={selectedNode} />}
 
@@ -161,16 +167,18 @@ function App() {
               ctx.textAlign = "center";
               ctx.testBaseline = "middle";
               ctx.fillStyle = "black";
-              if (labels) ctx.fillText(label, node.x, node.y + 6);
+              if (options.labels) ctx.fillText(label, node.x, node.y + 6);
             }}
             // Format the tree as top-down DAG
-            dagMode={treeFormat ? "td" : "zout"}
+            dagMode={options.formatAsTree ? "td" : "zout"}
             // Particles to indicate relationship direction
-            linkDirectionalParticles={particles ? 3 : 0}
+            linkDirectionalParticles={options.particles ? 3 : 0}
             linkDirectionalParticleSpeed={0.002}
             // Node styling
             nodeVal={(e) =>
-              sizeByGeneration ? sizeByGen(e.name) : sizeByChildren(e.name)
+              options.sizeByGeneration
+                ? sizeByGen(e.name)
+                : sizeByChildren(e.name)
             }
             nodeColor={(e) => colorByGen(e.name)}
             minZoom={1}
