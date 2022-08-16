@@ -5,14 +5,6 @@ const ToggleStates = ({ options, setOptions }) => {
   return (
     <Stack spacing={5} direction="row">
       <Checkbox
-        isChecked={options.particles}
-        onChange={(e) =>
-          setOptions({ ...options, particles: e.target.checked })
-        }
-      >
-        Enable Particles
-      </Checkbox>
-      <Checkbox
         isChecked={options.labels}
         onChange={(e) => setOptions({ ...options, labels: e.target.checked })}
       >

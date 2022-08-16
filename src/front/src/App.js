@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { Input, Flex, Button, Stack, Checkbox } from "@chakra-ui/react";
+import { Input, Flex, Button, Stack } from "@chakra-ui/react";
 import { ForceGraph2D } from "react-force-graph";
 import * as d3 from "d3";
-import "./App.css";
+import axios from "axios";
 
 import { QAS, MYN, LZA } from "./ExampleTrees"; // Preprocessed trees
-import { K190072 } from "./ExampleBranches"; // Preprocessed branches
+import { K190072 } from "./ExampleBranches"; // Preprocessed knumbers
+
 import Tooltip from "./Tooltip";
 import Links from "./Links";
 import ToggleStates from "./ToggleStates";
@@ -21,28 +22,53 @@ function App() {
 
   // User options
   const [options, setOptions] = useState({
-    particles: true,
     labels: true,
-    formatAsTree: true,
+    formatAsTree: false,
     sizeByGeneration: true,
-    colorByGeneration: true,
+    colorByGeneration: false,
   });
 
   // TODO: Change to not be hardcoded
   const getTree = () => {
     setSelectedNode("");
 
-    // TODO: format checking for input
+    // TODO: Add stronger format check
 
-    if (input === "QAS") {
-      setTreeJSON(QAS);
-      reformatTree(QAS);
-    } else if (input === "MYN") {
-      setTreeJSON(MYN);
-      reformatTree(MYN);
-    } else if (input === "LZA") {
-      setTreeJSON(LZA);
-      reformatTree(LZA);
+    // CASE: user searches for a product code
+    if (input.length === 7 && input[0] === "K") {
+      setHighlightedNode(input);
+      let pcode = "";
+      axios
+        .get(`https://api.fda.gov/device/510k.json?search=${input}`)
+
+        // Would need to alter this line to query database based off product code
+        .then((res) => {
+          pcode = res.data.results[0].product_code.split(",")[0];
+          if (pcode === "QAS") {
+            setTreeJSON(QAS);
+            reformatTree(QAS);
+          } else if (pcode === "MYN") {
+            setTreeJSON(MYN);
+            reformatTree(MYN);
+          } else if (pcode === "LZA") {
+            setTreeJSON(LZA);
+            reformatTree(LZA);
+          }
+        });
+    }
+
+    // CASE: user searches for a product code
+    else {
+      if (input === "QAS") {
+        setTreeJSON(QAS);
+        reformatTree(QAS);
+      } else if (input === "MYN") {
+        setTreeJSON(MYN);
+        reformatTree(MYN);
+      } else if (input === "LZA") {
+        setTreeJSON(LZA);
+        reformatTree(LZA);
+      }
     }
   };
 
@@ -52,8 +78,8 @@ function App() {
 
     // TODO: format checking for input
 
+    setHighlightedNode(input);
     if (input === "K190072") {
-      setHighlightedNode(input);
       setTreeJSON(K190072);
       reformatTree(K190072);
     }
@@ -76,7 +102,7 @@ function App() {
   // Adds collision forces
   useEffect(() => {
     const fg = fgRef.current;
-    fg.d3Force("collide", d3.forceCollide(4));
+    fg.d3Force("collide", d3.forceCollide(7));
   }, []);
 
   // Sets initial zoom size for each visualization
@@ -171,9 +197,11 @@ function App() {
             }}
             // Format the tree as top-down DAG
             dagMode={options.formatAsTree ? "td" : "zout"}
-            // Particles to indicate relationship direction
-            linkDirectionalParticles={options.particles ? 3 : 0}
-            linkDirectionalParticleSpeed={0.002}
+            dagLevelDistance={20}
+            // Link Styling
+            linkDirectionalArrowLength={2}
+            linkDirectionalArrowRelPos={1}
+            linkCurvature={0}
             // Node styling
             nodeVal={(e) =>
               options.sizeByGeneration
@@ -181,11 +209,10 @@ function App() {
                 : sizeByChildren(e.name)
             }
             nodeColor={(e) => colorByGen(e.name)}
-            minZoom={1}
+            minZoom={0.5}
             graphData={tree}
+            warmupTicks={200}
             nodeOpacity={0.25}
-            warmupTicks={100}
-            cooldownTicks={100}
             onNodeClick={(n) => setSelectedNode(n.name)}
           />
         )}

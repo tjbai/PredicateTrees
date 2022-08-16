@@ -12,6 +12,10 @@ const Tooltip = ({ treeJSON, selectedNode, setSelectedNode }) => {
   };
 
   useEffect(() => {
+    console.log(treeJSON);
+  }, [treeJSON]);
+
+  useEffect(() => {
     setPredicate(findPredicate);
   }, [selectedNode, treeJSON]);
 
