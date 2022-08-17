@@ -31,6 +31,7 @@ function App() {
   // TODO: Change to not be hardcoded
   const getTree = () => {
     setSelectedNode("");
+    setHighlightedNode("");
 
     // TODO: Add stronger format check
 
@@ -75,6 +76,7 @@ function App() {
   // TODO: Change to not be hardcoded
   const getBranch = () => {
     setSelectedNode("");
+    setHighlightedNode("");
 
     // TODO: format checking for input
 
@@ -199,8 +201,9 @@ function App() {
             dagMode={options.formatAsTree ? "td" : "zout"}
             dagLevelDistance={20}
             // Link Styling
-            linkDirectionalArrowLength={2}
+            linkDirectionalArrowLength={3}
             linkDirectionalArrowRelPos={1}
+            linkWidth={2}
             linkCurvature={0}
             // Node styling
             nodeVal={(e) =>
