@@ -29,3 +29,8 @@
   - **Predicate**: Direct predicate for corresponding selected node
   - **Number of Children**: Count of directly adjacent descendents
   - **Generation**: Proximity from "origin" device
+
+## Images
+
+![examplePCODE](./images/examplePCODE.png)
+![exampleBranch](./images/exampleBranch.png)
