@@ -6,7 +6,7 @@
 - Clone this repository
 - To run the webpage locally, navigate to ```./src/front```, then run ```npm i``` followed by ```npm start```. This will launch the webpage on localhost:3000.
 - To test the webscraping and (experimental) flask endpoints, first run ```pip install -r requirements.txt``` in the root directory
-  - All of the scraping functionality can be found in ```./notebooks/closestK.ipynb```. Documentation is self-contained.
+  - All of the scraping functionality can be found in ```./notebooks/closestK.ipynb```. **The main functions you care about are scrape_tree and scrape_branch.** Documentation is self-contained. 
   - To run a development server for the flask backend, navigate to ```./src/back``` and run ```python -m flask run```
   
 ## General Usage
