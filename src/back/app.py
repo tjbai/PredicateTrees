@@ -1,7 +1,7 @@
 from flask import Flask, request
 from flask_cors import CORS
 
-from scrape import scrape, to_root
+from scrape import scrape_tree, scrape_branch
 
 app = Flask(__name__)
 CORS(app)
@@ -10,7 +10,7 @@ CORS(app)
 @app.route('/tree', methods=['POST'])
 def tree():
     data = request.get_json()
-    return scrape(data['pcode'])
+    return scrape_tree(data['pcode'])
 
 
 @app.route('/test', methods={'GET', 'POST'})

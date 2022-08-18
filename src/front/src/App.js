@@ -4,12 +4,12 @@ import { ForceGraph2D } from "react-force-graph";
 import * as d3 from "d3";
 import axios from "axios";
 
-import { QAS, MYN, LZA } from "./ExampleTrees"; // Preprocessed trees
-import { K190072 } from "./ExampleBranches"; // Preprocessed knumbers
+import { QAS, MYN, LZA } from "./Examples/ExampleTrees"; // Preprocessed trees
+import { K190072 } from "./Examples/ExampleBranches"; // Preprocessed knumbers
 
-import Tooltip from "./Tooltip";
-import Links from "./Links";
-import ToggleStates from "./ToggleStates";
+import Tooltip from "./Components/Tooltip";
+import Links from "./Components/Links";
+import ToggleStates from "./Components/ToggleStates";
 
 function App() {
   const [input, setInput] = useState(""); // User input
@@ -154,6 +154,7 @@ function App() {
 
   return (
     <Flex flex={1} align="center" direction="column" padding="10px">
+      {/* User input and buttons */}
       <Stack width="100%" direction="column" align="center">
         <Stack direction="row" flex={1}>
           <Input
@@ -216,7 +217,10 @@ function App() {
             graphData={tree}
             warmupTicks={200}
             nodeOpacity={0.25}
-            onNodeClick={(n) => setSelectedNode(n.name)}
+            onNodeClick={(n) => {
+              setSelectedNode(n.name);
+              setHighlightedNode(n.name);
+            }}
           />
         )}
       </Stack>
